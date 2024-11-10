@@ -10,6 +10,7 @@ import (
 	"github.com/vadimpk/ppc-project/repository/db/sqlc"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.46.3 --dir . --name BusinessRepository --output ./mocks
 type BusinessRepository interface {
 	Create(ctx context.Context, business *entity.Business) error
 	Get(ctx context.Context, id int) (*entity.Business, error)
@@ -44,7 +45,7 @@ func (r *businessRepository) Create(ctx context.Context, business *entity.Busine
 		ColorScheme: colorSchemeJSON,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create business: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	business.ID = int(dbBusiness.ID)
@@ -67,7 +68,7 @@ func (r *businessRepository) Update(ctx context.Context, business *entity.Busine
 		Name: business.Name,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to update business: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	business.CreatedAt = dbBusiness.CreatedAt.Time
@@ -86,7 +87,7 @@ func (r *businessRepository) UpdateAppearance(ctx context.Context, id int, logoU
 		ColorScheme: colorSchemeJSON,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to update business appearance: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	return nil

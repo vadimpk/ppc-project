@@ -2,15 +2,13 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"errors"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vadimpk/ppc-project/entity"
 	"github.com/vadimpk/ppc-project/repository/db/sqlc"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.46.3 --dir . --name UserRepository --output ./mocks
 type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) error
 	CreateBusinessAdmin(ctx context.Context, businessName string, user *entity.User) error
@@ -51,7 +49,7 @@ func (r *userRepository) Create(ctx context.Context, user *entity.User) error {
 
 	dbUser, err := r.db.SQLC.CreateUser(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	user.ID = int(dbUser.ID)
@@ -78,7 +76,7 @@ func (r *userRepository) CreateBusinessAdmin(ctx context.Context, businessName s
 
 	dbUser, err := r.db.SQLC.CreateBusinessAdmin(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to create business admin: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	user.ID = int(dbUser.ID)
@@ -90,10 +88,7 @@ func (r *userRepository) CreateBusinessAdmin(ctx context.Context, businessName s
 func (r *userRepository) Get(ctx context.Context, id int) (*entity.User, error) {
 	dbUser, err := r.db.SQLC.GetUserByID(ctx, int32(id))
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	return convertDBUserToEntity(dbUser), nil
@@ -110,10 +105,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, businessID int, email s
 
 	dbUser, err := r.db.SQLC.GetUserByEmail(ctx, params)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("failed to get user by email: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	return convertDBUserToEntity(dbUser), nil
@@ -130,10 +122,7 @@ func (r *userRepository) GetByPhone(ctx context.Context, businessID int, phone s
 
 	dbUser, err := r.db.SQLC.GetUserByPhone(ctx, params)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("failed to get user by phone: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	return convertDBUserToEntity(dbUser), nil
@@ -157,7 +146,7 @@ func (r *userRepository) Update(ctx context.Context, user *entity.User) error {
 
 	dbUser, err := r.db.SQLC.UpdateUser(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	user.CreatedAt = dbUser.CreatedAt.Time
@@ -172,7 +161,7 @@ func (r *userRepository) UpdatePassword(ctx context.Context, id int, passwordHas
 
 	err := r.db.SQLC.UpdateUserPassword(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to update password: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	return nil

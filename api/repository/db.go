@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vadimpk/ppc-project/repository/db/sqlc"
@@ -105,6 +106,13 @@ func (db *DB) HandleBasicErrors(err error) error {
 		return ErrNotFound
 	} else if strings.Contains(e, "duplicate key value violates unique constraint") {
 		return ErrAlreadyExists
+	}
+
+	var pgError *pgconn.PgError
+	if errors.As(err, &pgError) {
+		if pgError.Code == "23503" {
+			return ErrNotFound
+		}
 	}
 
 	return err

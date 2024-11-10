@@ -2,14 +2,13 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vadimpk/ppc-project/entity"
 	"github.com/vadimpk/ppc-project/repository/db/sqlc"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.46.3 --dir . --name BusinessServiceRepository --output ./mocks
 type BusinessServiceRepository interface {
 	Create(ctx context.Context, service *entity.BusinessService) error
 	Get(ctx context.Context, id int) (*entity.BusinessService, error)
@@ -44,7 +43,7 @@ func (r *businessServiceRepository) Create(ctx context.Context, service *entity.
 		IsActive:    pgtype.Bool{Bool: service.IsActive, Valid: true},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create service: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	service.ID = int(dbService.ID)
@@ -55,10 +54,7 @@ func (r *businessServiceRepository) Create(ctx context.Context, service *entity.
 func (r *businessServiceRepository) Get(ctx context.Context, id int) (*entity.BusinessService, error) {
 	dbService, err := r.db.SQLC.GetService(ctx, int32(id))
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("failed to get service: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	return convertDBServiceToEntity(dbService), nil
@@ -79,7 +75,7 @@ func (r *businessServiceRepository) Update(ctx context.Context, service *entity.
 		IsActive:    pgtype.Bool{Bool: service.IsActive, Valid: true},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to update service: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	service.CreatedAt = dbService.CreatedAt.Time
@@ -89,7 +85,7 @@ func (r *businessServiceRepository) Update(ctx context.Context, service *entity.
 func (r *businessServiceRepository) Delete(ctx context.Context, id int) error {
 	err := r.db.SQLC.DeleteService(ctx, int32(id))
 	if err != nil {
-		return fmt.Errorf("failed to delete service: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	return nil
@@ -98,7 +94,7 @@ func (r *businessServiceRepository) Delete(ctx context.Context, id int) error {
 func (r *businessServiceRepository) List(ctx context.Context, businessID int) ([]entity.BusinessService, error) {
 	dbServices, err := r.db.SQLC.ListServices(ctx, pgtype.Int4{Int32: int32(businessID), Valid: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list services: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	services := make([]entity.BusinessService, len(dbServices))
@@ -112,7 +108,7 @@ func (r *businessServiceRepository) List(ctx context.Context, businessID int) ([
 func (r *businessServiceRepository) ListActive(ctx context.Context, businessID int) ([]entity.BusinessService, error) {
 	dbServices, err := r.db.SQLC.ListActiveServices(ctx, pgtype.Int4{Int32: int32(businessID), Valid: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list active services: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	services := make([]entity.BusinessService, len(dbServices))

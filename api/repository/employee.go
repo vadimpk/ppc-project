@@ -2,14 +2,13 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vadimpk/ppc-project/entity"
 	"github.com/vadimpk/ppc-project/repository/db/sqlc"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.46.3 --dir . --name EmployeeRepository --output ./mocks
 type EmployeeRepository interface {
 	Create(ctx context.Context, employee *entity.Employee) error
 	Get(ctx context.Context, id int) (*entity.Employee, error)
@@ -43,7 +42,7 @@ func (r *employeeRepository) Create(ctx context.Context, employee *entity.Employ
 		IsActive:       pgtype.Bool{Bool: employee.IsActive, Valid: true},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create employee: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	employee.ID = int(dbEmployee.ID)
@@ -54,10 +53,7 @@ func (r *employeeRepository) Create(ctx context.Context, employee *entity.Employ
 func (r *employeeRepository) Get(ctx context.Context, id int) (*entity.Employee, error) {
 	dbEmployee, err := r.db.SQLC.GetEmployee(ctx, int32(id))
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("failed to get employee: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	return convertDBEmployeeToEntity(dbEmployee), nil
@@ -75,7 +71,7 @@ func (r *employeeRepository) Update(ctx context.Context, employee *entity.Employ
 		IsActive:       pgtype.Bool{Bool: employee.IsActive, Valid: true},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to update employee: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	employee.CreatedAt = dbEmployee.CreatedAt.Time
@@ -85,7 +81,7 @@ func (r *employeeRepository) Update(ctx context.Context, employee *entity.Employ
 func (r *employeeRepository) List(ctx context.Context, businessID int) ([]entity.Employee, error) {
 	dbEmployees, err := r.db.SQLC.ListEmployees(ctx, pgtype.Int4{Int32: int32(businessID), Valid: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list employees: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	employees := make([]entity.Employee, len(dbEmployees))
@@ -108,7 +104,7 @@ func (r *employeeRepository) AssignServices(ctx context.Context, employeeID int,
 		Column2:    serviceIDsInt32,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to assign services: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	return nil
@@ -126,7 +122,7 @@ func (r *employeeRepository) RemoveServices(ctx context.Context, employeeID int,
 		Column2:    serviceIDsInt32,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to remove services: %w", err)
+		return r.db.HandleBasicErrors(err)
 	}
 
 	return nil
@@ -135,7 +131,7 @@ func (r *employeeRepository) RemoveServices(ctx context.Context, employeeID int,
 func (r *employeeRepository) GetServices(ctx context.Context, employeeID int) ([]entity.BusinessService, error) {
 	dbServices, err := r.db.SQLC.GetEmployeeServices(ctx, int32(employeeID))
 	if err != nil {
-		return nil, fmt.Errorf("failed to get employee services: %w", err)
+		return nil, r.db.HandleBasicErrors(err)
 	}
 
 	services := make([]entity.BusinessService, len(dbServices))
