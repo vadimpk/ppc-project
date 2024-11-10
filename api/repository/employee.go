@@ -140,7 +140,7 @@ func (r *employeeRepository) GetServices(ctx context.Context, employeeID int) ([
 
 	services := make([]entity.BusinessService, len(dbServices))
 	for i, dbService := range dbServices {
-		services[i] = convertDBServiceToEntity(dbService)
+		services[i] = *convertDBServiceToEntity(dbService)
 	}
 
 	return services, nil
@@ -178,27 +178,4 @@ func convertDBEmployeeToEntity(row sqlc.GetEmployeeRow) *entity.Employee {
 	}
 
 	return employee
-}
-
-// Updated conversion function for business service with integer price
-func convertDBServiceToEntity(s sqlc.Service) entity.BusinessService {
-	return entity.BusinessService{
-		ID:          int(s.ID),
-		BusinessID:  int(s.BusinessID.Int32),
-		Name:        s.Name,
-		Description: stringFromPgText(s.Description),
-		Duration:    int(s.Duration),
-		Price:       int(s.Price), // Now directly using integer
-		IsActive:    s.IsActive.Bool,
-		CreatedAt:   s.CreatedAt.Time,
-	}
-}
-
-// Helper function for optional string fields
-func stringFromPgText(t pgtype.Text) *string {
-	if !t.Valid {
-		return nil
-	}
-	s := t.String
-	return &s
 }
