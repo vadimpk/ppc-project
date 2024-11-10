@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/vadimpk/ppc-project/entity"
 )
@@ -18,10 +17,10 @@ type EmployeeRepository interface {
 }
 
 type employeeRepository struct {
-	db *sql.DB
+	db *DB
 }
 
-func NewEmployeeRepository(db *sql.DB) EmployeeRepository {
+func NewEmployeeRepository(db *DB) EmployeeRepository {
 	return &employeeRepository{
 		db: db,
 	}

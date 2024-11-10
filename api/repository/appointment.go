@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/vadimpk/ppc-project/entity"
@@ -19,10 +18,10 @@ type AppointmentRepository interface {
 }
 
 type appointmentRepository struct {
-	db *sql.DB
+	db *DB
 }
 
-func NewAppointmentRepository(db *sql.DB) AppointmentRepository {
+func NewAppointmentRepository(db *DB) AppointmentRepository {
 	return &appointmentRepository{
 		db: db,
 	}

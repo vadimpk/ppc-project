@@ -1,0 +1,5 @@
+codebase.md
+.idea
+Makefile.dev
+
+repository/db/sqlc/*

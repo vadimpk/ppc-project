@@ -1,7 +1,5 @@
 package repository
 
-import "database/sql"
-
 type Repositories struct {
 	Business    BusinessRepository
 	User        UserRepository
@@ -11,7 +9,7 @@ type Repositories struct {
 	Appointment AppointmentRepository
 }
 
-func NewRepositories(db *sql.DB) *Repositories {
+func NewRepositories(db *DB) *Repositories {
 	return &Repositories{
 		Business:    NewBusinessRepository(db),
 		User:        NewUserRepository(db),

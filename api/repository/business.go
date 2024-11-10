@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/vadimpk/ppc-project/entity"
 )
@@ -15,10 +14,10 @@ type BusinessRepository interface {
 }
 
 type businessRepository struct {
-	db *sql.DB
+	db *DB
 }
 
-func NewBusinessRepository(db *sql.DB) BusinessRepository {
+func NewBusinessRepository(db *DB) BusinessRepository {
 	return &businessRepository{
 		db: db,
 	}

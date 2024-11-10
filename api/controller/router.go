@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewRouter(h *Handlers) *chi.Mux {
+func NewRouter(h *Handlers, authMiddleware func(http.Handler) http.Handler) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Global middleware
@@ -26,7 +26,7 @@ func NewRouter(h *Handlers) *chi.Mux {
 
 		// Routes requiring authentication
 		r.Group(func(r chi.Router) {
-			r.Use(AuthMiddleware)
+			r.Use(authMiddleware)
 
 			// Business routes
 			r.Route("/businesses", func(r chi.Router) {
@@ -105,12 +105,4 @@ func NewRouter(h *Handlers) *chi.Mux {
 	})
 
 	return r
-}
-
-// Note: AuthMiddleware needs to be implemented
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Implement authentication logic
-		next.ServeHTTP(w, r)
-	})
 }
