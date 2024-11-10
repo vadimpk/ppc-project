@@ -16,7 +16,7 @@ type BusinessService struct {
 	Name        string    `json:"name" db:"name"`
 	Description *string   `json:"description" db:"description"`
 	Duration    int       `json:"duration" db:"duration"`
-	Price       float64   `json:"price" db:"price"`
+	Price       int       `json:"price" db:"price"`
 	IsActive    bool      `json:"is_active" db:"is_active"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
@@ -28,6 +28,7 @@ type Employee struct {
 	Specialization *string   `json:"specialization" db:"specialization"`
 	IsActive       bool      `json:"is_active" db:"is_active"`
 	CreatedAt      time.Time `json:"created_at" db:"created_at"`
+	User           *User     `json:"user" db:"user"`
 }
 
 type EmployeeService struct {

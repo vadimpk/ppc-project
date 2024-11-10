@@ -31,10 +31,10 @@ CREATE TABLE services
 (
     id          SERIAL PRIMARY KEY,
     business_id INTEGER REFERENCES businesses (id),
-    name        VARCHAR(255)   NOT NULL,
+    name        VARCHAR(255) NOT NULL,
     description TEXT,
-    duration    INTEGER        NOT NULL, -- in minutes
-    price       DECIMAL(10, 2) NOT NULL,
+    duration    INTEGER      NOT NULL, -- in minutes
+    price       INTEGER      NOT NULL, -- in cents
     is_active   BOOLEAN                  DEFAULT true,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
