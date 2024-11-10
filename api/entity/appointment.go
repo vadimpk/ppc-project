@@ -13,6 +13,10 @@ type Appointment struct {
 	Status       string    `json:"status" db:"status"`
 	ReminderTime *int      `json:"reminder_time" db:"reminder_time"`
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+
+	Client   *User            `json:"client"`
+	Employee *User            `json:"employee"`
+	Service  *BusinessService `json:"service"`
 }
 
 const (
