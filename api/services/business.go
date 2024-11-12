@@ -70,8 +70,10 @@ func (s *businessService) UpdateAppearance(ctx context.Context, id int, logoURL 
 	}
 
 	// Validate color scheme
-	if err := validateColorScheme(colorScheme); err != nil {
-		return fmt.Errorf("invalid color scheme: %w", err)
+	if colorScheme != nil {
+		if err := validateColorScheme(colorScheme); err != nil {
+			return fmt.Errorf("invalid color scheme: %w", err)
+		}
 	}
 
 	if err := s.repos.Business.UpdateAppearance(ctx, id, logoURL, colorScheme); err != nil {

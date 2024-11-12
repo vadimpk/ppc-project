@@ -32,6 +32,7 @@ WHERE id = $1;
 SELECT *
 FROM services
 WHERE business_id = $1
+  AND is_active = true
 ORDER BY name;
 
 -- name: ListActiveServices :many

@@ -56,7 +56,7 @@ func main() {
 	authMiddleware := middleware.NewAuthMiddleware(tokenManager)
 
 	// Initialize router
-	router := controller.NewRouter(handlers, authMiddleware.Authenticate)
+	router := controller.NewRouter(handlers, authMiddleware.Authenticate, middleware.CorsMiddleware)
 
 	// Configure server
 	port := os.Getenv("PORT")

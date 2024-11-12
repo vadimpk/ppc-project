@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewRouter(h *Handlers, authMiddleware func(http.Handler) http.Handler) *chi.Mux {
+func NewRouter(h *Handlers, authMiddleware, corsMiddleware func(http.Handler) http.Handler) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Global middleware
@@ -15,6 +15,7 @@ func NewRouter(h *Handlers, authMiddleware func(http.Handler) http.Handler) *chi
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
+	r.Use(corsMiddleware)
 
 	// API routes
 	r.Route("/api/v1", func(r chi.Router) {
