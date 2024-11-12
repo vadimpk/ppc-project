@@ -33,7 +33,9 @@ func NewScheduleRepository(db *DB) ScheduleRepository {
 }
 
 func timeToMicroseconds(t time.Time) int64 {
-	return t.UnixMicro()
+	midnight := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	duration := t.Sub(midnight)
+	return duration.Microseconds()
 }
 
 func microsecondsToTime(microseconds int64) time.Time {
