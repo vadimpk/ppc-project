@@ -53,7 +53,7 @@ func TestUserService_Create(t *testing.T) {
 			name: "positive: user successfully created with email",
 			mock: func(m mocksForExecution) {
 				m.businessRepo.On("Get", ctx, businessID).Return(&entity.Business{ID: businessID}, nil)
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(nil, repository.ErrNotFound)
+				m.userRepo.On("GetByEmail", ctx, email).Return(nil, repository.ErrNotFound)
 				m.userRepo.On("Create", ctx, userWithEmail).Return(nil)
 			},
 			args: args{
@@ -73,7 +73,7 @@ func TestUserService_Create(t *testing.T) {
 					PasswordHash: "hash",
 					Role:         entity.RoleAdmin,
 				}
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(nil, repository.ErrNotFound)
+				m.userRepo.On("GetByEmail", ctx, email).Return(nil, repository.ErrNotFound)
 				m.userRepo.On("Create", ctx, adminUser).Return(nil)
 			},
 			args: args{
@@ -111,7 +111,7 @@ func TestUserService_Create(t *testing.T) {
 			name: "negative: email already exists",
 			mock: func(m mocksForExecution) {
 				m.businessRepo.On("Get", ctx, businessID).Return(&entity.Business{ID: businessID}, nil)
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(&entity.User{}, nil)
+				m.userRepo.On("GetByEmail", ctx, email).Return(&entity.User{}, nil)
 			},
 			args: args{
 				user: userWithEmail,
@@ -124,7 +124,7 @@ func TestUserService_Create(t *testing.T) {
 			name: "negative: phone already exists",
 			mock: func(m mocksForExecution) {
 				m.businessRepo.On("Get", ctx, businessID).Return(&entity.Business{ID: businessID}, nil)
-				m.userRepo.On("GetByPhone", ctx, businessID, phone).Return(&entity.User{}, nil)
+				m.userRepo.On("GetByPhone", ctx, phone).Return(&entity.User{}, nil)
 			},
 			args: args{
 				user: &entity.User{
@@ -218,7 +218,7 @@ func TestUserService_CreateBusinessAdmin(t *testing.T) {
 		{
 			name: "positive: business admin successfully created",
 			mock: func(m mocksForExecution) {
-				m.userRepo.On("GetByEmail", ctx, 0, email).Return(nil, repository.ErrNotFound)
+				m.userRepo.On("GetByEmail", ctx, email).Return(nil, repository.ErrNotFound)
 				m.userRepo.On("CreateBusinessAdmin", ctx, businessName, adminUser).Return(nil)
 			},
 			args: args{
@@ -232,7 +232,7 @@ func TestUserService_CreateBusinessAdmin(t *testing.T) {
 		{
 			name: "negative: email already exists",
 			mock: func(m mocksForExecution) {
-				m.userRepo.On("GetByEmail", ctx, 0, email).Return(&entity.User{}, nil)
+				m.userRepo.On("GetByEmail", ctx, email).Return(&entity.User{}, nil)
 			},
 			args: args{
 				businessName: businessName,
@@ -324,7 +324,7 @@ func TestUserService_Update(t *testing.T) {
 					FullName:   "Updated User",
 				}
 				m.userRepo.On("Get", ctx, existingUser.ID).Return(existingUser, nil)
-				m.userRepo.On("GetByEmail", ctx, businessID, newEmail).Return(nil, repository.ErrNotFound)
+				m.userRepo.On("GetByEmail", ctx, newEmail).Return(nil, repository.ErrNotFound)
 				m.userRepo.On("Update", ctx, updatedUser).Return(nil)
 			},
 			args: args{
@@ -364,7 +364,7 @@ func TestUserService_Update(t *testing.T) {
 			name: "negative: email already exists",
 			mock: func(m mocksForExecution) {
 				m.userRepo.On("Get", ctx, existingUser.ID).Return(existingUser, nil)
-				m.userRepo.On("GetByEmail", ctx, businessID, newEmail).Return(&entity.User{}, nil)
+				m.userRepo.On("GetByEmail", ctx, newEmail).Return(&entity.User{}, nil)
 			},
 			args: args{
 				user: &entity.User{
@@ -455,7 +455,7 @@ func TestUserService_Authenticate(t *testing.T) {
 		{
 			name: "positive: authenticate with email",
 			mock: func(m mocksForExecution) {
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(user, nil)
+				m.userRepo.On("GetByEmail", ctx, email).Return(user, nil)
 			},
 			args: args{
 				businessID: businessID,
@@ -475,7 +475,7 @@ func TestUserService_Authenticate(t *testing.T) {
 					Phone:        &phone,
 					PasswordHash: "hashed_password",
 				}
-				m.userRepo.On("GetByPhone", ctx, businessID, phone).Return(userWithPhone, nil)
+				m.userRepo.On("GetByPhone", ctx, phone).Return(userWithPhone, nil)
 			},
 			args: args{
 				businessID: businessID,
@@ -504,7 +504,7 @@ func TestUserService_Authenticate(t *testing.T) {
 		{
 			name: "negative: user not found",
 			mock: func(m mocksForExecution) {
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(nil, repository.ErrNotFound)
+				m.userRepo.On("GetByEmail", ctx, email).Return(nil, repository.ErrNotFound)
 			},
 			args: args{
 				businessID: businessID,
@@ -518,7 +518,7 @@ func TestUserService_Authenticate(t *testing.T) {
 		{
 			name: "negative: repository error",
 			mock: func(m mocksForExecution) {
-				m.userRepo.On("GetByEmail", ctx, businessID, email).Return(nil, fmt.Errorf("some error"))
+				m.userRepo.On("GetByEmail", ctx, email).Return(nil, fmt.Errorf("some error"))
 			},
 			args: args{
 				businessID: businessID,
@@ -552,7 +552,7 @@ func TestUserService_Authenticate(t *testing.T) {
 			})
 
 			// Execute
-			got, err := userService.Authenticate(ctx, tc.args.businessID, tc.args.email, tc.args.phone, tc.args.password)
+			got, err := userService.Authenticate(ctx, tc.args.email, tc.args.phone, tc.args.password)
 
 			// Assert
 			if tc.expected.err != nil {

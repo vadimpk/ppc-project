@@ -80,9 +80,9 @@ func (_m *UserRepository) Get(ctx context.Context, id int) (*entity.User, error)
 	return r0, r1
 }
 
-// GetByEmail provides a mock function with given fields: ctx, businessID, email
-func (_m *UserRepository) GetByEmail(ctx context.Context, businessID int, email string) (*entity.User, error) {
-	ret := _m.Called(ctx, businessID, email)
+// GetByEmail provides a mock function with given fields: ctx, email
+func (_m *UserRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	ret := _m.Called(ctx, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetByEmail")
@@ -90,19 +90,19 @@ func (_m *UserRepository) GetByEmail(ctx context.Context, businessID int, email 
 
 	var r0 *entity.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int, string) (*entity.User, error)); ok {
-		return rf(ctx, businessID, email)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.User, error)); ok {
+		return rf(ctx, email)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int, string) *entity.User); ok {
-		r0 = rf(ctx, businessID, email)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.User); ok {
+		r0 = rf(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.User)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int, string) error); ok {
-		r1 = rf(ctx, businessID, email)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -110,9 +110,9 @@ func (_m *UserRepository) GetByEmail(ctx context.Context, businessID int, email 
 	return r0, r1
 }
 
-// GetByPhone provides a mock function with given fields: ctx, businessID, phone
-func (_m *UserRepository) GetByPhone(ctx context.Context, businessID int, phone string) (*entity.User, error) {
-	ret := _m.Called(ctx, businessID, phone)
+// GetByPhone provides a mock function with given fields: ctx, phone
+func (_m *UserRepository) GetByPhone(ctx context.Context, phone string) (*entity.User, error) {
+	ret := _m.Called(ctx, phone)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetByPhone")
@@ -120,19 +120,19 @@ func (_m *UserRepository) GetByPhone(ctx context.Context, businessID int, phone 
 
 	var r0 *entity.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int, string) (*entity.User, error)); ok {
-		return rf(ctx, businessID, phone)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.User, error)); ok {
+		return rf(ctx, phone)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int, string) *entity.User); ok {
-		r0 = rf(ctx, businessID, phone)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.User); ok {
+		r0 = rf(ctx, phone)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.User)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int, string) error); ok {
-		r1 = rf(ctx, businessID, phone)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, phone)
 	} else {
 		r1 = ret.Error(1)
 	}

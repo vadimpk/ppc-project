@@ -265,7 +265,7 @@ func TestUserRepository_GetByEmail(t *testing.T) {
 				}
 			})
 
-			got, err := userRepo.GetByEmail(context.Background(), businessID, tc.inputEmail)
+			got, err := userRepo.GetByEmail(context.Background(), tc.inputEmail)
 			if tc.wantErr != nil {
 				assert.ErrorIs(t, err, tc.wantErr)
 				assert.Nil(t, got)
@@ -328,7 +328,7 @@ func TestUserRepository_GetByPhone(t *testing.T) {
 				}
 			})
 
-			got, err := userRepo.GetByPhone(context.Background(), businessID, tc.inputPhone)
+			got, err := userRepo.GetByPhone(context.Background(), tc.inputPhone)
 			if tc.wantErr != nil {
 				assert.ErrorIs(t, err, tc.wantErr)
 				assert.Nil(t, got)

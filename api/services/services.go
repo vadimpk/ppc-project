@@ -45,7 +45,7 @@ type UserService interface {
 	GetByPhone(ctx context.Context, phone string) (*entity.User, error)
 	Update(ctx context.Context, user *entity.User) (*entity.User, error)
 	// Authentication methods
-	Authenticate(ctx context.Context, businessID int, email string, phone string, password string) (*entity.User, error)
+	Authenticate(ctx context.Context, email string, phone string, password string) (*entity.User, error)
 }
 
 // EmployeeService handles employee management

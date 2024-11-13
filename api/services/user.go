@@ -31,7 +31,7 @@ func (s *userService) Create(ctx context.Context, user *entity.User) (*entity.Us
 
 	// Check unique constraints
 	if user.Email != nil {
-		_, err := s.repos.User.GetByEmail(ctx, user.BusinessID, *user.Email)
+		_, err := s.repos.User.GetByEmail(ctx, *user.Email)
 		if err == nil {
 			return nil, fmt.Errorf("email already exists")
 		}
@@ -41,7 +41,7 @@ func (s *userService) Create(ctx context.Context, user *entity.User) (*entity.Us
 	}
 
 	if user.Phone != nil {
-		_, err := s.repos.User.GetByPhone(ctx, user.BusinessID, *user.Phone)
+		_, err := s.repos.User.GetByPhone(ctx, *user.Phone)
 		if err == nil {
 			return nil, fmt.Errorf("phone already exists")
 		}
@@ -60,7 +60,7 @@ func (s *userService) Create(ctx context.Context, user *entity.User) (*entity.Us
 func (s *userService) CreateBusinessAdmin(ctx context.Context, businessName string, user *entity.User) (*entity.User, error) {
 	// Check unique constraints for email/phone
 	if user.Email != nil {
-		exists, err := s.repos.User.GetByEmail(ctx, user.BusinessID, *user.Email)
+		exists, err := s.repos.User.GetByEmail(ctx, *user.Email)
 		if err == nil && exists != nil {
 			return nil, fmt.Errorf("email already exists")
 		}
@@ -70,7 +70,7 @@ func (s *userService) CreateBusinessAdmin(ctx context.Context, businessName stri
 	}
 
 	if user.Phone != nil {
-		exists, err := s.repos.User.GetByPhone(ctx, user.BusinessID, *user.Phone)
+		exists, err := s.repos.User.GetByPhone(ctx, *user.Phone)
 		if err == nil && exists != nil {
 			return nil, fmt.Errorf("phone already exists")
 		}
@@ -119,7 +119,7 @@ func (s *userService) Update(ctx context.Context, user *entity.User) (*entity.Us
 
 	// Check unique constraints if email/phone is being updated
 	if user.Email != nil && (existing.Email == nil || *existing.Email != *user.Email) {
-		_, err := s.repos.User.GetByEmail(ctx, user.BusinessID, *user.Email)
+		_, err := s.repos.User.GetByEmail(ctx, *user.Email)
 		if err == nil {
 			return nil, fmt.Errorf("email already exists")
 		}
@@ -129,7 +129,7 @@ func (s *userService) Update(ctx context.Context, user *entity.User) (*entity.Us
 	}
 
 	if user.Phone != nil && (existing.Phone == nil || *existing.Phone != *user.Phone) {
-		_, err := s.repos.User.GetByPhone(ctx, user.BusinessID, *user.Phone)
+		_, err := s.repos.User.GetByPhone(ctx, *user.Phone)
 		if err == nil {
 			return nil, fmt.Errorf("phone already exists")
 		}
@@ -145,14 +145,14 @@ func (s *userService) Update(ctx context.Context, user *entity.User) (*entity.Us
 	return user, nil
 }
 
-func (s *userService) Authenticate(ctx context.Context, businessID int, email string, phone string, password string) (*entity.User, error) {
+func (s *userService) Authenticate(ctx context.Context, email string, phone string, password string) (*entity.User, error) {
 	var user *entity.User
 	var err error
 
 	if email != "" {
-		user, err = s.repos.User.GetByEmail(ctx, businessID, email)
+		user, err = s.repos.User.GetByEmail(ctx, email)
 	} else if phone != "" {
-		user, err = s.repos.User.GetByPhone(ctx, businessID, phone)
+		user, err = s.repos.User.GetByPhone(ctx, phone)
 	} else {
 		return nil, fmt.Errorf("either email or phone is required")
 	}

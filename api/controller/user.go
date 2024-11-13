@@ -34,6 +34,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 type RegisterRequest struct {
 	BusinessName string `json:"business_name,omitempty"` // only for business registration
+	BusinessID   int    `json:"business_id,omitempty"`   // only for employee registration
 	Email        string `json:"email,omitempty"`
 	Phone        string `json:"phone,omitempty"`
 	FullName     string `json:"full_name"`
@@ -51,7 +52,7 @@ type AuthResponse struct {
 	User  entity.User `json:"user"`
 }
 
-func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) RegisterBusiness(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, http.StatusBadRequest, "invalid request body")
@@ -88,11 +89,12 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Register regular user
 		user, err = h.userService.Create(r.Context(), &entity.User{
+			BusinessID:   req.BusinessID,
 			Email:        &req.Email,
 			Phone:        &req.Phone,
 			FullName:     req.FullName,
 			PasswordHash: string(hashedPassword),
-			Role:         entity.RoleClient,
+			Role:         entity.RoleEmployee,
 		})
 	}
 
