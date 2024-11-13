@@ -41,8 +41,8 @@ type UserService interface {
 	Create(ctx context.Context, user *entity.User) (*entity.User, error)
 	CreateBusinessAdmin(ctx context.Context, businessName string, user *entity.User) (*entity.User, error)
 	Get(ctx context.Context, id int) (*entity.User, error)
-	GetByEmail(ctx context.Context, businessID int, email string) (*entity.User, error)
-	GetByPhone(ctx context.Context, businessID int, phone string) (*entity.User, error)
+	GetByEmail(ctx context.Context, email string) (*entity.User, error)
+	GetByPhone(ctx context.Context, phone string) (*entity.User, error)
 	Update(ctx context.Context, user *entity.User) (*entity.User, error)
 	// Authentication methods
 	Authenticate(ctx context.Context, businessID int, email string, phone string, password string) (*entity.User, error)

@@ -94,16 +94,16 @@ func (s *userService) Get(ctx context.Context, id int) (*entity.User, error) {
 	return user, nil
 }
 
-func (s *userService) GetByEmail(ctx context.Context, businessID int, email string) (*entity.User, error) {
-	user, err := s.repos.User.GetByEmail(ctx, businessID, email)
+func (s *userService) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user, err := s.repos.User.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by email: %w", err)
 	}
 	return user, nil
 }
 
-func (s *userService) GetByPhone(ctx context.Context, businessID int, phone string) (*entity.User, error) {
-	user, err := s.repos.User.GetByPhone(ctx, businessID, phone)
+func (s *userService) GetByPhone(ctx context.Context, phone string) (*entity.User, error) {
+	user, err := s.repos.User.GetByPhone(ctx, phone)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by phone: %w", err)
 	}

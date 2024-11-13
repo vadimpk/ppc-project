@@ -16,14 +16,12 @@ WHERE id = $1;
 -- name: GetUserByEmail :one
 SELECT *
 FROM users
-WHERE email = $1
-  AND business_id = $2;
+WHERE email = $1;
 
 -- name: GetUserByPhone :one
 SELECT *
 FROM users
-WHERE phone = $1
-  AND business_id = $2;
+WHERE phone = $1;
 
 -- name: UpdateUser :one
 UPDATE users

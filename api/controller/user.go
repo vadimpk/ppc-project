@@ -41,10 +41,9 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	BusinessID int    `json:"business_id"`
-	Email      string `json:"email,omitempty"`
-	Phone      string `json:"phone,omitempty"`
-	Password   string `json:"password"`
+	Email    string `json:"email,omitempty"`
+	Phone    string `json:"phone,omitempty"`
+	Password string `json:"password"`
 }
 
 type AuthResponse struct {
@@ -127,8 +126,8 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate request
-	if req.BusinessID == 0 || req.Password == "" {
-		response.Error(w, http.StatusBadRequest, "business_id and password are required")
+	if req.Password == "" {
+		response.Error(w, http.StatusBadRequest, "password is required")
 		return
 	}
 	if req.Email == "" && req.Phone == "" {
@@ -140,9 +139,9 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var user *entity.User
 	var err error
 	if req.Email != "" {
-		user, err = h.userService.GetByEmail(r.Context(), req.BusinessID, req.Email)
+		user, err = h.userService.GetByEmail(r.Context(), req.Email)
 	} else {
-		user, err = h.userService.GetByPhone(r.Context(), req.BusinessID, req.Phone)
+		user, err = h.userService.GetByPhone(r.Context(), req.Phone)
 	}
 
 	if err != nil {

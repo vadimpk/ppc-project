@@ -13,8 +13,8 @@ type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) error
 	CreateBusinessAdmin(ctx context.Context, businessName string, user *entity.User) error
 	Get(ctx context.Context, id int) (*entity.User, error)
-	GetByEmail(ctx context.Context, businessID int, email string) (*entity.User, error)
-	GetByPhone(ctx context.Context, businessID int, phone string) (*entity.User, error)
+	GetByEmail(ctx context.Context, email string) (*entity.User, error)
+	GetByPhone(ctx context.Context, phone string) (*entity.User, error)
 	Update(ctx context.Context, user *entity.User) error
 	UpdatePassword(ctx context.Context, id int, passwordHash string) error
 }
@@ -94,16 +94,8 @@ func (r *userRepository) Get(ctx context.Context, id int) (*entity.User, error) 
 	return convertDBUserToEntity(dbUser), nil
 }
 
-func (r *userRepository) GetByEmail(ctx context.Context, businessID int, email string) (*entity.User, error) {
-	params := sqlc.GetUserByEmailParams{
-		BusinessID: pgtype.Int4{
-			Int32: int32(businessID),
-			Valid: true,
-		},
-		Email: pgtype.Text{String: email, Valid: true},
-	}
-
-	dbUser, err := r.db.SQLC.GetUserByEmail(ctx, params)
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	dbUser, err := r.db.SQLC.GetUserByEmail(ctx, pgtype.Text{String: email, Valid: true})
 	if err != nil {
 		return nil, r.db.HandleBasicErrors(err)
 	}
@@ -111,16 +103,8 @@ func (r *userRepository) GetByEmail(ctx context.Context, businessID int, email s
 	return convertDBUserToEntity(dbUser), nil
 }
 
-func (r *userRepository) GetByPhone(ctx context.Context, businessID int, phone string) (*entity.User, error) {
-	params := sqlc.GetUserByPhoneParams{
-		BusinessID: pgtype.Int4{
-			Int32: int32(businessID),
-			Valid: true,
-		},
-		Phone: pgtype.Text{String: phone, Valid: true},
-	}
-
-	dbUser, err := r.db.SQLC.GetUserByPhone(ctx, params)
+func (r *userRepository) GetByPhone(ctx context.Context, phone string) (*entity.User, error) {
+	dbUser, err := r.db.SQLC.GetUserByPhone(ctx, pgtype.Text{String: phone, Valid: true})
 	if err != nil {
 		return nil, r.db.HandleBasicErrors(err)
 	}
