@@ -1,0 +1,6 @@
+@import './base.css';
+
+.bg-container {
+  background-color: #1e2024;
+  border-radius: 20px;
+}
