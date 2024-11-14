@@ -59,50 +59,7 @@ WHERE employee_id = $1
   AND override_date BETWEEN $2 AND $3
 ORDER BY override_date, start_time;
 
--- name: GetEmployeeSchedule :many
-WITH all_dates AS (SELECT generate_series($2::date, $3::date, '1 day'::interval)::date AS date),
-     templates AS (SELECT t.id,
-                          t.employee_id,
-                          t.start_time,
-                          t.end_time,
-                          t.is_break,
-                          EXTRACT(DOW FROM d.date) as day_of_week,
-                          d.date
-                   FROM all_dates d
-                            JOIN schedule_templates t ON EXTRACT(DOW FROM d.date) = t.day_of_week
-                   WHERE t.employee_id = $1),
-     schedule AS (SELECT date,
-                         ARRAY_AGG(
-                                 jsonb_build_object(
-                                         'id', id,
-                                         'start_time', start_time,
-                                         'end_time', end_time,
-                                         'is_break', is_break,
-                                         'is_override', false
-                                 )
-                                 ORDER BY start_time
-                         ) as slots
-                  FROM templates
-                  GROUP BY date
-
-                  UNION
-
-                  SELECT override_date as date,
-                         ARRAY_AGG(
-                                 jsonb_build_object(
-                                         'id', id,
-                                         'start_time', start_time,
-                                         'end_time', end_time,
-                                         'is_break', is_break,
-                                         'is_override', true,
-                                         'is_working_day', is_working_day
-                                 )
-                                 ORDER BY start_time
-                         )             as slots
-                  FROM schedule_overrides
-                  WHERE employee_id = $1
-                    AND override_date BETWEEN $2 AND $3
-                  GROUP BY override_date)
+-- name: GetEmployeeSchedule :one
 SELECT *
-FROM schedule
-ORDER BY date;
+FROM schedule_templates
+WHERE employee_id = $1 AND day_of_week = $2;

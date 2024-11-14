@@ -22,7 +22,7 @@ func NewRouter(h *Handlers, authMiddleware, corsMiddleware func(http.Handler) ht
 		// Auth routes - no authentication required
 		r.Group(func(r chi.Router) {
 			r.Post("/auth/login", h.User.Login)
-			r.Post("/auth/register", h.User.Register)
+			r.Post("/auth/register", h.User.RegisterBusiness)
 		})
 
 		// Routes requiring authentication
@@ -31,6 +31,7 @@ func NewRouter(h *Handlers, authMiddleware, corsMiddleware func(http.Handler) ht
 
 			// Business routes
 			r.Route("/businesses", func(r chi.Router) {
+				r.Get("/search", h.Business.SearchBusinessAndServices)
 				r.Post("/", h.Business.Create)
 
 				// Business-specific routes
@@ -44,6 +45,7 @@ func NewRouter(h *Handlers, authMiddleware, corsMiddleware func(http.Handler) ht
 						r.Get("/", h.Service.List)
 						r.Post("/", h.Service.Create)
 						r.Get("/{serviceID}", h.Service.Get)
+						r.Get("/{serviceID}/employees", h.Service.ListEmployees)
 						r.Put("/{serviceID}", h.Service.Update)
 						r.Delete("/{serviceID}", h.Service.Delete)
 					})
@@ -82,6 +84,7 @@ func NewRouter(h *Handlers, authMiddleware, corsMiddleware func(http.Handler) ht
 					// Appointment routes
 					r.Route("/appointments", func(r chi.Router) {
 						r.Get("/", h.Appointment.ListByBusiness)
+						r.Get("/employee/{employeeID}", h.Appointment.ListByEmployee)
 						r.Post("/", h.Appointment.Create)
 						r.Get("/slots", h.Appointment.GetAvailableSlots)
 

@@ -34,6 +34,8 @@ type BusinessService interface {
 	Get(ctx context.Context, id int) (*entity.Business, error)
 	Update(ctx context.Context, business *entity.Business) error
 	UpdateAppearance(ctx context.Context, id int, logoURL string, colorScheme map[string]interface{}) error
+	ListBySearch(ctx context.Context, search string) ([]entity.Business, error)
+	ListServicesBySearch(ctx context.Context, search string) ([]entity.BusinessService, error)
 }
 
 // UserService handles user management and authentication
@@ -51,6 +53,7 @@ type UserService interface {
 // EmployeeService handles employee management
 type EmployeeService interface {
 	Create(ctx context.Context, employee *entity.Employee) error
+	GetIDByUserID(ctx context.Context, userID int) (int, error)
 	Get(ctx context.Context, id int) (*entity.Employee, error)
 	Update(ctx context.Context, employee *entity.Employee) error
 	List(ctx context.Context, businessID int) ([]entity.Employee, error)
@@ -67,6 +70,7 @@ type BusinessServiceService interface {
 	Delete(ctx context.Context, id int) error
 	List(ctx context.Context, businessID int) ([]entity.BusinessService, error)
 	ListActive(ctx context.Context, businessID int) ([]entity.BusinessService, error)
+	ListEmployee(ctx context.Context, employeeID int) ([]entity.Employee, error)
 }
 
 // ScheduleService handles employee scheduling
@@ -101,6 +105,6 @@ type AppointmentService interface {
 
 // Supporting types that match our schema
 type TimeSlot struct {
-	StartTime time.Time
-	EndTime   time.Time
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
 }

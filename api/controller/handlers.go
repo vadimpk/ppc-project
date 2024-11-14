@@ -17,7 +17,7 @@ type Handlers struct {
 func NewHandlers(services *services.Services, tokenManager *auth.TokenManager) *Handlers {
 	return &Handlers{
 		Business:    NewBusinessHandler(services.Business),
-		User:        NewUserHandler(services.User, tokenManager),
+		User:        NewUserHandler(services.User, services.Employee, tokenManager),
 		Employee:    NewEmployeeHandler(services.Employee),
 		Service:     NewBusinessServiceHandler(services.Service),
 		Schedule:    NewScheduleHandler(services.Schedule),

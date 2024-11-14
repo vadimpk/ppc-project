@@ -2,7 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi/v5"
+	"github.com/vadimpk/ppc-project/controller/middleware"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/vadimpk/ppc-project/controller/response"
@@ -13,14 +16,16 @@ import (
 )
 
 type UserHandler struct {
-	userService  services.UserService
-	tokenManager *auth.TokenManager
+	userService     services.UserService
+	employeeService services.EmployeeService
+	tokenManager    *auth.TokenManager
 }
 
-func NewUserHandler(service services.UserService, manager *auth.TokenManager) *UserHandler {
+func NewUserHandler(service services.UserService, employeeService services.EmployeeService, manager *auth.TokenManager) *UserHandler {
 	return &UserHandler{
-		userService:  service,
-		tokenManager: manager,
+		userService:     service,
+		employeeService: employeeService,
+		tokenManager:    manager,
 	}
 }
 
@@ -28,8 +33,68 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+type UpdateUserRequest struct {
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	FullName string `json:"full_name"`
+}
 
+func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(chi.URLParam(r, "userID")) // from /users/{userID}/appointments
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid user ID")
+		return
+	}
+
+	var req UpdateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if req.Email == "" || req.Phone == "" || req.FullName == "" {
+		response.Error(w, http.StatusBadRequest, "email, phone, and full name are required")
+		return
+	}
+
+	actualUserID, ok := middleware.GetUserID(r.Context())
+	if !ok {
+		response.Error(w, http.StatusInternalServerError, "failed to get user ID")
+		return
+	}
+
+	if actualUserID != userID {
+		response.Error(w, http.StatusForbidden, "forbidden")
+		return
+	}
+
+	user, err := h.userService.Get(r.Context(), userID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to get user")
+		return
+	}
+
+	user.Email = &req.Email
+	user.Phone = &req.Phone
+	user.FullName = req.FullName
+
+	user, err = h.userService.Update(r.Context(), user)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to update user")
+		return
+	}
+
+	// Generate token
+	token, err := h.tokenManager.GenerateToken(user.ID, user.BusinessID, user.Role)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to generate token")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, AuthResponse{
+		Token: token,
+		User:  *user,
+	})
 }
 
 type RegisterRequest struct {
@@ -86,7 +151,7 @@ func (h *UserHandler) RegisterBusiness(w http.ResponseWriter, r *http.Request) {
 			PasswordHash: string(hashedPassword),
 			Role:         entity.RoleAdmin,
 		})
-	} else {
+	} else if req.BusinessID != 0 {
 		// Register regular user
 		user, err = h.userService.Create(r.Context(), &entity.User{
 			BusinessID:   req.BusinessID,
@@ -95,6 +160,15 @@ func (h *UserHandler) RegisterBusiness(w http.ResponseWriter, r *http.Request) {
 			FullName:     req.FullName,
 			PasswordHash: string(hashedPassword),
 			Role:         entity.RoleEmployee,
+		})
+	} else {
+		// Register regular user
+		user, err = h.userService.Create(r.Context(), &entity.User{
+			Email:        &req.Email,
+			Phone:        &req.Phone,
+			FullName:     req.FullName,
+			PasswordHash: string(hashedPassword),
+			Role:         entity.RoleClient,
 		})
 	}
 
@@ -105,6 +179,15 @@ func (h *UserHandler) RegisterBusiness(w http.ResponseWriter, r *http.Request) {
 		}
 		response.Error(w, http.StatusInternalServerError, "failed to create user")
 		return
+	}
+
+	if user.Role == entity.RoleEmployee {
+		employeeID, err := h.employeeService.GetIDByUserID(r.Context(), user.ID)
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, "failed to get employee")
+			return
+		}
+		user.EmployeeID = &employeeID
 	}
 
 	// Generate token
@@ -162,6 +245,15 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "failed to generate token")
 		return
+	}
+
+	if user.Role == entity.RoleEmployee {
+		employeeID, err := h.employeeService.GetIDByUserID(r.Context(), user.ID)
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, "failed to get employee")
+			return
+		}
+		user.EmployeeID = &employeeID
 	}
 
 	response.JSON(w, http.StatusOK, AuthResponse{

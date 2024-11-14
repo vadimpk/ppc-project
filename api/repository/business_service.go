@@ -16,6 +16,7 @@ type BusinessServiceRepository interface {
 	Delete(ctx context.Context, id int) error
 	List(ctx context.Context, businessID int) ([]entity.BusinessService, error)
 	ListActive(ctx context.Context, businessID int) ([]entity.BusinessService, error)
+	ListServicesBySearch(ctx context.Context, search string) ([]entity.BusinessService, error)
 }
 
 type businessServiceRepository struct {
@@ -26,6 +27,20 @@ func NewBusinessServiceRepository(db *DB) BusinessServiceRepository {
 	return &businessServiceRepository{
 		db: db,
 	}
+}
+
+func (r *businessServiceRepository) ListServicesBySearch(ctx context.Context, search string) ([]entity.BusinessService, error) {
+	dbServices, err := r.db.SQLC.ListServicesBySearch(ctx, "%"+search+"%")
+	if err != nil {
+		return nil, r.db.HandleBasicErrors(err)
+	}
+
+	services := make([]entity.BusinessService, len(dbServices))
+	for i, dbService := range dbServices {
+		services[i] = *convertDBServiceToEntity(dbService)
+	}
+
+	return services, nil
 }
 
 func (r *businessServiceRepository) Create(ctx context.Context, service *entity.BusinessService) error {

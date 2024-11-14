@@ -37,6 +37,15 @@ func (s *businessServiceService) Create(ctx context.Context, service *entity.Bus
 	return nil
 }
 
+func (s *businessServiceService) ListEmployee(ctx context.Context, serviceID int) ([]entity.Employee, error) {
+	employees, err := s.repos.Employee.ListByServiceID(ctx, serviceID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list employees: %w", err)
+	}
+
+	return employees, nil
+}
+
 func (s *businessServiceService) Get(ctx context.Context, id int) (*entity.BusinessService, error) {
 	service, err := s.repos.Service.Get(ctx, id)
 	if err != nil {

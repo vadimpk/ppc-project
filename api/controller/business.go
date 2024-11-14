@@ -130,3 +130,33 @@ func (h *BusinessHandler) UpdateAppearance(w http.ResponseWriter, r *http.Reques
 
 	response.JSON(w, http.StatusOK, map[string]string{"status": "updated"})
 }
+
+type SearchBusinessResponse struct {
+	Businesses []entity.Business        `json:"businesses"`
+	Services   []entity.BusinessService `json:"services"`
+}
+
+func (h *BusinessHandler) SearchBusinessAndServices(w http.ResponseWriter, r *http.Request) {
+	search := r.URL.Query().Get("search")
+	if search == "" {
+		response.Error(w, http.StatusBadRequest, "search query is required")
+		return
+	}
+
+	businesses, err := h.businessService.ListBySearch(r.Context(), search)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to search businesses")
+		return
+	}
+
+	businessServices, err := h.businessService.ListServicesBySearch(r.Context(), search)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to search services")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, SearchBusinessResponse{
+		Businesses: businesses,
+		Services:   businessServices,
+	})
+}

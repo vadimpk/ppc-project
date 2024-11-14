@@ -17,6 +17,8 @@ type EmployeeRepository interface {
 	AssignServices(ctx context.Context, employeeID int, serviceIDs []int) error
 	RemoveServices(ctx context.Context, employeeID int, serviceIDs []int) error
 	GetServices(ctx context.Context, employeeID int) ([]entity.BusinessService, error)
+	GetIDByUserID(ctx context.Context, userID int) (int, error)
+	ListByServiceID(ctx context.Context, serviceID int) ([]entity.Employee, error)
 }
 
 type employeeRepository struct {
@@ -59,6 +61,15 @@ func (r *employeeRepository) Get(ctx context.Context, id int) (*entity.Employee,
 	return convertDBEmployeeToEntity(dbEmployee), nil
 }
 
+func (r *employeeRepository) GetIDByUserID(ctx context.Context, userID int) (int, error) {
+	dbEmployee, err := r.db.SQLC.GetEmployeeIDByUserID(ctx, pgtype.Int4{Int32: int32(userID), Valid: true})
+	if err != nil {
+		return 0, r.db.HandleBasicErrors(err)
+	}
+
+	return int(dbEmployee), nil
+}
+
 func (r *employeeRepository) Update(ctx context.Context, employee *entity.Employee) error {
 	var specialization pgtype.Text
 	if employee.Specialization != nil {
@@ -80,6 +91,20 @@ func (r *employeeRepository) Update(ctx context.Context, employee *entity.Employ
 
 func (r *employeeRepository) List(ctx context.Context, businessID int) ([]entity.Employee, error) {
 	dbEmployees, err := r.db.SQLC.ListEmployees(ctx, pgtype.Int4{Int32: int32(businessID), Valid: true})
+	if err != nil {
+		return nil, r.db.HandleBasicErrors(err)
+	}
+
+	employees := make([]entity.Employee, len(dbEmployees))
+	for i, dbEmployee := range dbEmployees {
+		employees[i] = *convertDBEmployeeToEntity(sqlc.GetEmployeeRow(dbEmployee))
+	}
+
+	return employees, nil
+}
+
+func (r *employeeRepository) ListByServiceID(ctx context.Context, serviceID int) ([]entity.Employee, error) {
+	dbEmployees, err := r.db.SQLC.ListEmployeesByService(ctx, int32(serviceID))
 	if err != nil {
 		return nil, r.db.HandleBasicErrors(err)
 	}

@@ -10,6 +10,7 @@ type User struct {
 	FullName     string    `json:"full_name" db:"full_name"`
 	PasswordHash string    `json:"-" db:"password_hash"`
 	Role         string    `json:"role" db:"role"`
+	EmployeeID   *int      `json:"employee_id" db:"employee_id"`
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 }
 

@@ -20,15 +20,6 @@ func NewUserService(repos *repository.Repositories) UserService {
 }
 
 func (s *userService) Create(ctx context.Context, user *entity.User) (*entity.User, error) {
-	// Validate business existence if not admin
-	if user.Role != entity.RoleAdmin {
-		business, err := s.repos.Business.Get(ctx, user.BusinessID)
-		if err != nil {
-			return nil, fmt.Errorf("invalid business: %w", err)
-		}
-		user.BusinessID = business.ID
-	}
-
 	// Check unique constraints
 	if user.Email != nil {
 		_, err := s.repos.User.GetByEmail(ctx, *user.Email)
@@ -52,6 +43,18 @@ func (s *userService) Create(ctx context.Context, user *entity.User) (*entity.Us
 
 	if err := s.repos.User.Create(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	if user.Role == entity.RoleEmployee {
+		employee := &entity.Employee{
+			BusinessID: user.BusinessID,
+			UserID:     user.ID,
+			IsActive:   true,
+			CreatedAt:  user.CreatedAt,
+		}
+		if err := s.repos.Employee.Create(ctx, employee); err != nil {
+			return nil, fmt.Errorf("failed to create employee: %w", err)
+		}
 	}
 
 	return user, nil

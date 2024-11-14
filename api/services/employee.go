@@ -60,6 +60,15 @@ func (s *employeeService) Get(ctx context.Context, id int) (*entity.Employee, er
 	return employee, nil
 }
 
+func (s *employeeService) GetIDByUserID(ctx context.Context, userID int) (int, error) {
+	employeeID, err := s.repos.Employee.GetIDByUserID(ctx, userID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get employee ID: %w", err)
+	}
+
+	return employeeID, nil
+}
+
 func (s *employeeService) Update(ctx context.Context, employee *entity.Employee) error {
 	// Validate employee existence and get current data
 	existing, err := s.repos.Employee.Get(ctx, employee.ID)

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -20,6 +21,7 @@ type ScheduleRepository interface {
 	UpdateOverride(ctx context.Context, override *entity.ScheduleOverride) error
 	DeleteOverride(ctx context.Context, id int) error
 	ListOverrides(ctx context.Context, employeeID int, startDate, endDate time.Time) ([]entity.ScheduleOverride, error)
+	GetEmployeeSchedule(ctx context.Context, employeeID int, date time.Time) (*entity.ScheduleTemplate, error)
 }
 
 type scheduleRepository struct {
@@ -228,4 +230,20 @@ func convertDBOverrideToEntity(o sqlc.ScheduleOverride) *entity.ScheduleOverride
 	}
 
 	return override
+}
+
+func (r *scheduleRepository) GetEmployeeSchedule(ctx context.Context, employeeID int, date time.Time) (*entity.ScheduleTemplate, error) {
+	dbTemplate, err := r.db.SQLC.GetEmployeeSchedule(ctx, sqlc.GetEmployeeScheduleParams{
+		EmployeeID: pgtype.Int4{Int32: int32(employeeID), Valid: true},
+		DayOfWeek:  pgtype.Int4{Int32: int32(date.Weekday()), Valid: true},
+	})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, fmt.Errorf("failed to get employee schedule: %w", err)
+	}
+
+	template := convertDBTemplateToEntity(dbTemplate)
+	return template, nil
 }

@@ -16,6 +16,7 @@ type BusinessRepository interface {
 	Get(ctx context.Context, id int) (*entity.Business, error)
 	Update(ctx context.Context, business *entity.Business) error
 	UpdateAppearance(ctx context.Context, id int, logoURL string, colorScheme map[string]interface{}) error
+	ListBySearch(ctx context.Context, search string) ([]entity.Business, error)
 }
 
 type businessRepository struct {
@@ -26,6 +27,20 @@ func NewBusinessRepository(db *DB) BusinessRepository {
 	return &businessRepository{
 		db: db,
 	}
+}
+
+func (r *businessRepository) ListBySearch(ctx context.Context, search string) ([]entity.Business, error) {
+	dbBusinesses, err := r.db.SQLC.ListBySearch(ctx, "%"+search+"%")
+	if err != nil {
+		return nil, r.db.HandleBasicErrors(err)
+	}
+
+	businesses := make([]entity.Business, len(dbBusinesses))
+	for i, dbBusiness := range dbBusinesses {
+		businesses[i] = *convertDBBusinessToEntity(dbBusiness)
+	}
+
+	return businesses, nil
 }
 
 func (r *businessRepository) Create(ctx context.Context, business *entity.Business) error {

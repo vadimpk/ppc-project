@@ -22,6 +22,11 @@ FROM employees e
          JOIN users u ON u.id = e.user_id
 WHERE e.id = $1;
 
+-- name: GetEmployeeIDByUserID :one
+select e.id
+FROM employees e
+WHERE e.user_id = $1;
+
 -- name: UpdateEmployee :one
 UPDATE employees
 SET specialization = COALESCE($2, specialization),
@@ -61,3 +66,22 @@ FROM services s
          JOIN employee_services es ON es.service_id = s.id
 WHERE es.employee_id = $1
 ORDER BY s.name;
+
+
+-- name: ListEmployeesByService :many
+SELECT e.id,
+       e.business_id,
+       e.user_id,
+       e.specialization,
+       e.is_active,
+       e.created_at,
+       u.email      as user_email,
+       u.phone      as user_phone,
+       u.full_name  as user_full_name,
+       u.role       as user_role,
+       u.created_at as user_created_at
+FROM employees e
+         JOIN users u ON u.id = e.user_id
+            JOIN employee_services es ON es.employee_id = e.id
+WHERE es.service_id = $1
+ORDER BY e.created_at DESC;

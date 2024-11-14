@@ -1,16 +1,15 @@
 -- name: CreateBusiness :one
-INSERT INTO businesses (
-    name,
-    logo_url,
-    color_scheme
-) VALUES (
-             $1,
-             $2,
-             $3
-         ) RETURNING *;
+INSERT INTO businesses (name,
+                        logo_url,
+                        color_scheme)
+VALUES ($1,
+        $2,
+        $3)
+RETURNING *;
 
 -- name: GetBusiness :one
-SELECT * FROM businesses
+SELECT *
+FROM businesses
 WHERE id = $1;
 
 -- name: UpdateBusiness :one
@@ -21,7 +20,19 @@ RETURNING *;
 
 -- name: UpdateBusinessAppearance :one
 UPDATE businesses
-SET logo_url = $2,
+SET logo_url     = $2,
     color_scheme = $3
 WHERE id = $1
 RETURNING *;
+
+
+-- name: ListBySearch :many
+SELECT *
+FROM businesses
+WHERE name ILIKE $1;
+
+
+-- name: ListServicesBySearch :many
+SELECT *
+FROM services
+WHERE name ILIKE $1;

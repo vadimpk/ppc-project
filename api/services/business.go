@@ -18,6 +18,24 @@ func NewBusinessService(repos *repository.Repositories) BusinessService {
 	}
 }
 
+func (s *businessService) ListBySearch(ctx context.Context, search string) ([]entity.Business, error) {
+	business, err := s.repos.Business.ListBySearch(ctx, search)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list businesses: %w", err)
+	}
+
+	return business, nil
+}
+
+func (s *businessService) ListServicesBySearch(ctx context.Context, search string) ([]entity.BusinessService, error) {
+	services, err := s.repos.Service.ListServicesBySearch(ctx, search)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list services: %w", err)
+	}
+
+	return services, nil
+}
+
 func (s *businessService) Create(ctx context.Context, business *entity.Business) error {
 	// Validate business data
 	if business.Name == "" {

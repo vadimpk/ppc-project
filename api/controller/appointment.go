@@ -83,7 +83,8 @@ func (h *AppointmentHandler) Create(w http.ResponseWriter, r *http.Request) {
 		ReminderTime: req.ReminderTime,
 	}
 
-	if err := h.appointmentService.Create(r.Context(), appointment); err != nil {
+	if err := h.appointmentService.
+		Create(r.Context(), appointment); err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -212,6 +213,41 @@ func (h *AppointmentHandler) ListByBusiness(w http.ResponseWriter, r *http.Reque
 	}
 
 	appointments, err := h.appointmentService.ListByBusiness(r.Context(), businessID, startTime, endTime)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to list appointments")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, appointments)
+}
+
+func (h *AppointmentHandler) ListByEmployee(w http.ResponseWriter, r *http.Request) {
+	businessID, err := strconv.Atoi(chi.URLParam(r, "businessID"))
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid business ID")
+		return
+	}
+
+	employeeID, err := strconv.Atoi(chi.URLParam(r, "employeeID"))
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid employee ID")
+		return
+	}
+
+	// Verify business context
+	currentBusinessID, _ := middleware.GetBusinessID(r.Context())
+	if businessID != currentBusinessID {
+		response.Error(w, http.StatusForbidden, "unauthorized")
+		return
+	}
+
+	startTime, endTime, err := parseDateRangeQuery(r)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	appointments, err := h.appointmentService.ListByEmployee(r.Context(), employeeID, startTime, endTime)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "failed to list appointments")
 		return

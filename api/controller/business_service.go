@@ -89,13 +89,6 @@ func (h *BusinessServiceHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify user has permission to view the service
-	businessID, _ := middleware.GetBusinessID(r.Context())
-	if service.BusinessID != businessID {
-		response.Error(w, http.StatusForbidden, "unauthorized")
-		return
-	}
-
 	response.JSON(w, http.StatusOK, service)
 }
 
@@ -196,4 +189,20 @@ func (h *BusinessServiceHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.JSON(w, http.StatusOK, services)
+}
+
+func (h *BusinessServiceHandler) ListEmployees(w http.ResponseWriter, r *http.Request) {
+	serviceID, err := strconv.Atoi(chi.URLParam(r, "serviceID"))
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid service ID")
+		return
+	}
+
+	employees, err := h.serviceService.ListEmployee(r.Context(), serviceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "failed to list employees")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, employees)
 }
