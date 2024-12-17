@@ -11,6 +11,7 @@ import router from './router'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import './assets/app.css'

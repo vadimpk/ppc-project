@@ -124,7 +124,7 @@ export const useClientStore = defineStore('ClientStore', {
                 const {success, data, error} = response.data;
 
                 if (!success) {
-                    toast.error(error?.message || 'An error occurred during booking', {
+                    toast.error("The time slot is already taken", {
                         position: 'top-right',
                         timeout: 5000,
                     });
@@ -137,7 +137,7 @@ export const useClientStore = defineStore('ClientStore', {
 
                 return data;
             } catch (error) {
-                toast.error(error?.message || 'An error occurred during booking', {
+                toast.error("The time slot is already taken", {
                     position: 'top-right',
                     timeout: 5000,
                 });

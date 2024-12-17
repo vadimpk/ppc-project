@@ -2,69 +2,82 @@
   <div class="w-auto ms-4">
     <!-- Header Section -->
     <div class="bg-container p-4 mb-3">
-      <h2 class="h4">{{ business.name || 'Business Name' }} - {{ service.name || 'Service Name' }}</h2>
-      <p>{{ service.description }}</p>
-      <small>Duration: {{ formatDuration(service.duration) }} | Price: ${{ service.price / 100 }}</small>
+      <div class="d-flex align-items-center mb-3">
+        <img :src="business.logo_url" :alt="business.name" class="logo me-3"
+             v-if="business.logo_url"/>
+        <span class="h3 mb-0">{{ business.name || 'Business Details' }}</span>
+      </div>
+      <h2 class="h4">{{ service.name || 'Service Name' }}</h2>
+      <p class="text-muted">{{ service.description }}</p>
+
+      <p class="badge bg-primary text-dark mb-0 fs-6 me-3">{{ formatDuration(service.duration) }}</p>
+      <p class="badge bg-primary text-dark mb-0 fs-6">${{ (service.price / 100).toFixed(2) }}</p>
     </div>
 
-    <div class="bg-container p-4  mb-3">
-      <h5>Select an Employee</h5>
-      <div v-if="employees.length" class="d-flex flex-column">
-        <label
-            v-for="employee in employees"
-            :key="employee.id"
-            class="employee-item"
-        >
-          <input
-              type="radio"
-              :value="employee.id"
-              v-model="selectedEmployee"
-              class="me-2"
-          />
-          {{ employee.user.full_name }}
-        </label>
-      </div>
-      <div v-else>
-        <p>No employees available for this service.</p>
-      </div>
-    </div>
-
-    <!-- Date Display and Navigation -->
-    <div class="bg-container p-4" v-if="selectedEmployee">
-      <div class="row mb-3">
-        <div class="col-4 text-end">
-          <button @click="prevDay" class="btn btn-sm btn-secondary" :disabled="isToday">Previous</button>
-        </div>
-        <div class="col-4 text-center d-flex justify-content-center">
-          <h6 class="mb-0">{{ formattedDate }}</h6>
-        </div>
-        <div class="col-4">
-          <button @click="nextDay" class="btn btn-sm btn-secondary">Next</button>
+    <div class="row">
+      <div class="col-6 pe-3">
+        <div class="bg-container p-4">
+          <h4>Select an Employee</h4>
+          <div v-if="employees.length" class="d-flex flex-column">
+            <label
+                v-for="employee in employees"
+                :key="employee.id"
+                class="form-check-label fs-5"
+            >
+              <input
+                  type="radio"
+                  :value="employee.id"
+                  v-model="selectedEmployee"
+                  class="form-check-input me-2"
+              />
+              {{ employee.user.full_name }}
+            </label>
+          </div>
+          <div v-else>
+            <p>No employees available for this service.</p>
+          </div>
         </div>
       </div>
 
-      <!-- Time Slots Grid -->
-      <div class="time-slots-grid">
-        <div
-            v-for="(slot, index) in timeSlots"
-            :key="index"
-            class="time-slot"
-            :class="{ 'selected': selectedSlot === slot }"
-            @click="selectSlot(slot)"
-        >
-          {{ formatSlot(slot) }}
+      <!-- Date Display and Navigation -->
+      <div class="col-6">
+      <div class="bg-container p-4" v-if="selectedEmployee">
+        <div class="d-flex justify-content-center mb-3">
+          <div class="text-end me-3">
+            <button @click="prevDay" class="btn btn-sm btn-outline-primary" :disabled="isToday">Previous</button>
+          </div>
+          <div class="text-center d-flex justify-content-center me-3 h-100">
+            <h6 class="mb-0">{{ formattedDate }}</h6>
+          </div>
+          <div class="">
+            <button @click="nextDay" class="btn btn-sm btn-outline-primary">Next</button>
+          </div>
+        </div>
+
+        <!-- Time Slots Grid -->
+        <div class="time-slots-grid">
+          <div
+              v-for="(slot, index) in timeSlots"
+              :key="index"
+              class="time-slot"
+              :class="{ 'selected': selectedSlot === slot }"
+              @click="selectSlot(slot)"
+          >
+            {{ formatSlot(slot) }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center" v-if="isNotAvailable">
+          <p>No available time slots for this date.</p>
+        </div>
+
+        <!-- Confirm Booking Button -->
+        <div class="mt-4 d-flex justify-content-center">
+          <button @click="confirmBooking" class="btn btn-primary" :disabled="!selectedSlot || !selectedEmployee">
+            Confirm Booking
+          </button>
         </div>
       </div>
-
-      <div class="d-flex justify-content-center align-items-center" v-if="isNotAvailable">
-        <p>No available time slots for this date.</p>
-      </div>
-
-      <!-- Confirm Booking Button -->
-      <div class="mt-4 d-flex justify-content-center">
-        <button @click="confirmBooking" class="btn btn-primary" :disabled="!selectedSlot || !selectedEmployee">
-          Confirm Booking
-        </button>
       </div>
     </div>
   </div>
@@ -239,5 +252,9 @@ function combineDateAndTime(dateObj, timeString) {
 .time-slot.selected {
   background-color: #bb86fc;
   color: #1e2024;
+}
+
+.logo {
+  height: 40px;
 }
 </style>

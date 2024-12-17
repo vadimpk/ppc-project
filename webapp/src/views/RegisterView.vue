@@ -1,5 +1,6 @@
 <template>
-  <div class="vh-100 d-flex align-items-center justify-content-center">
+  <div class="vh-100 d-flex align-items-center justify-content-center flex-column">
+    <div class="mb-4"><Logo/></div>
     <div class="container p-5 bg-container">
       <h2 class="mb-4 h2 text-center" v-if="!business_id">Start your journey of online booking system!</h2>
       <h2 class="mb-4 h2 text-center" v-else>Join to the business!</h2>
@@ -22,36 +23,31 @@
       </div>
 
       <form @submit.prevent="handleSubmit" class="mx-auto" style="max-width: 400px;">
-        <div class="mb-3" v-if="accountType === 'business'">
-          <label for="businessName" class="form-label">Business Name</label>
-          <input type="text" v-model="formData.business_name" id="businessName" class="form-control"
-                 :required="accountType === 'business'"/>
+        <div class="mb-4" v-if="accountType === 'business'">
+          <input type="text" v-model="formData.business_name" id="businessName" class="form-control form-control-lg"
+                 :required="accountType === 'business'" placeholder="Business Name"/>
         </div>
 
-        <div class="mb-3">
-          <label for="fullName" class="form-label">Full Name</label>
-          <input type="text" v-model="formData.full_name" id="fullName" class="form-control" required/>
+        <div class="mb-4">
+          <input type="text" v-model="formData.full_name" id="fullName" class="form-control form-control-lg" required placeholder="Full Name"/>
         </div>
 
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" v-model="formData.email" id="email" class="form-control" required/>
+        <div class="mb-4">
+          <input type="email" v-model="formData.email" id="email" class="form-control form-control-lg" required placeholder="Email"/>
         </div>
 
-        <div class="mb-3">
-          <label for="phone" class="form-label">Phone</label>
-          <input type="tel" v-model="formData.phone" id="phone" class="form-control"/>
+        <div class="mb-4">
+          <input type="tel" v-model="formData.phone" id="phone" class="form-control form-control-lg" placeholder="Phone"/>
         </div>
 
-        <div class="mb-5">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" v-model="formData.password" id="password" class="form-control" required/>
+        <div class="mb-4">
+          <input type="password" v-model="formData.password" id="password" class="form-control form-control-lg" required placeholder="Password"/>
         </div>
 
-        <button type="submit" class="btn btn-lg btn-success w-100">Register</button>
+        <button type="submit" class="btn btn-lg btn-primary w-100">Register</button>
       </form>
 
-      <p class="text-center mt-3" v-if="!business_id">
+      <p class="text-center mt-4" v-if="!business_id">
         Already have an account?
         <router-link to="/auth/login" class="text-decoration-none">Log in</router-link>
       </p>
@@ -65,6 +61,7 @@ import {useToast} from 'vue-toastification';
 import {useUserStore} from '@/stores/userStore';
 import {USER_ROLE_ADMIN, USER_ROLE_CLIENT, USER_ROLE_EMPLOYEE} from "@/utils/constants.js";
 import {useRoute, useRouter} from "vue-router";
+import Logo from "@/components/Logo.vue";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -108,7 +105,6 @@ const handleSubmit = async () => {
 <style scoped>
 .container {
   max-width: 600px;
-  width: 500px;
-  margin: auto;
+  width: 550px;
 }
 </style>

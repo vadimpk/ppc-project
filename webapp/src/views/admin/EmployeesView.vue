@@ -2,8 +2,14 @@
   <div class="w-auto ms-4">
     <!-- Header Section -->
     <div class="bg-container p-4 d-flex justify-content-between align-items-center">
-      <h2 class="h2 mb-0">Employees</h2>
-      <button @click="generateRegistrationLink" class="btn btn-success">Generate Registration Link</button>
+      <h2 class="h2 mb-0">
+        <i class="bi bi-people me-2"></i>
+        Employees
+      </h2>
+      <button @click="generateRegistrationLink" class="btn btn-lg btn-primary">
+      <i class="bi bi-plus-lg me-2"></i>
+      Generate Registration Link
+      </button>
     </div>
 
     <!-- Employees List -->
@@ -12,17 +18,23 @@
            :key="employee.id">
         <div>
           <h5>{{ employee.user?.full_name }}</h5>
-          <p>Specialization: {{ employee.specialization || 'Not Specified' }}</p>
           <small>Joined: {{ new Date(employee.created_at).toLocaleDateString() }}</small>
         </div>
         <div class="d-flex justify-content-center align-items-center">
-          <button @click="navigateToSchedule(employee.id)" class="btn btn-primary me-2" data-bs-toggle="modal"
-                  data-bs-target="#scheduleModal">Schedule
+          <button @click="navigateToSchedule(employee.id)" class="btn btn-outline-primary me-3" data-bs-toggle="modal"
+                  data-bs-target="#scheduleModal">
+            <i class="bi bi-calendar2-range me-2"></i>
+            Schedule
           </button>
-          <button @click="viewEmployee(employee)" class="btn btn-primary me-2" data-bs-toggle="modal"
-                  data-bs-target="#employeeModal">View
+          <button @click="viewEmployee(employee)" class="btn btn-outline-primary me-3" data-bs-toggle="modal"
+                  data-bs-target="#employeeModal">
+            <i class="bi bi-eye"></i>
+            View
           </button>
-          <button @click="deleteEmployee(employee.id)" class="btn btn-danger">Delete</button>
+          <button @click="deleteEmployee(employee.id)" class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i>
+            Delete
+          </button>
         </div>
       </div>
     </div>

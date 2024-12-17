@@ -185,10 +185,10 @@ func convertDBAppointmentToEntity(a sqlc.GetAppointmentRow) *entity.Appointment 
 		ClientID:   int(a.ClientID.Int32),
 		EmployeeID: int(a.EmployeeID.Int32),
 		ServiceID:  int(a.ServiceID.Int32),
-		StartTime:  a.StartTime.Time,
-		EndTime:    a.EndTime.Time,
+		StartTime:  a.StartTime.Time.UTC(),
+		EndTime:    a.EndTime.Time.UTC(),
 		Status:     a.Status.String,
-		CreatedAt:  a.CreatedAt.Time,
+		CreatedAt:  a.CreatedAt.Time.UTC(),
 	}
 
 	if a.ReminderTime.Valid {

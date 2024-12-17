@@ -1,9 +1,14 @@
 <template>
   <div class="w-auto ms-4">
     <div class="bg-container p-4 d-flex justify-content-between align-items-center">
-      <h2 class="h2 mb-0">Business Services</h2>
+      <h2 class="h2 mb-0">
+        <i class="bi bi-card-checklist me-2"></i>
+        Business Services
+      </h2>
       <button @click="openCreateModal" data-bs-toggle="modal" data-bs-target="#manageServiceModal"
-              class="btn btn-success">Add New Service
+              class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-lg me-2"></i>
+        Add New Service
       </button>
       <ServiceModal :service="selectedService" :is-edit-mode="isEditMode"/>
     </div>
@@ -13,14 +18,20 @@
            :key="service.id">
         <div>
           <h5>{{ service.name }}</h5>
-          <p>{{ service.description }}</p>
-          <small>Duration: {{ formatDuration(service.duration) }}  |  Price: ${{ service.price / 100 }}</small>
+          <p class="w-75">{{ service.description }}</p>
+          <p class="badge bg-primary text-dark mb-0 fs-6 me-3">{{ formatDuration(service.duration) }}</p>
+          <p class="badge bg-primary text-dark mb-0 fs-6">${{ (service.price / 100).toFixed(2) }}</p>
         </div>
         <div>
-          <button @click="openEditModal(service)" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
-                  data-bs-target="#manageServiceModal">Edit
+          <button @click="openEditModal(service)" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                  data-bs-target="#manageServiceModal">
+            <i class="bi bi-pencil me-1"></i>
+            Edit
           </button>
-          <button @click="deleteService(service.id)" class="btn btn-sm btn-danger">Delete</button>
+          <button @click="deleteService(service.id)" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>
+            Delete
+          </button>
         </div>
       </div>
     </div>
@@ -74,4 +85,5 @@ const deleteService = async (serviceId) => {
 
 
 <style scoped>
+
 </style>

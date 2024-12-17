@@ -3,19 +3,20 @@
     <div
         v-for="service in services"
         :key="service.id"
-        class="bg-container p-3 mb-3 d-flex justify-content-between align-items-center"
+        class="bg-container p-4 mb-3 d-flex justify-content-between align-items-center"
     >
       <div class="">
         <h5>{{ service.name }}</h5>
         <p v-if="service.description">{{ service.description }}</p>
-        <p class="mb-0"><strong>Duration:</strong> {{ formatDuration(service.duration) }} | <strong>Price:</strong>
-          ${{ (service.price / 100).toFixed(2) }}</p>
+        <p class="badge bg-primary text-dark mb-0 fs-6 me-3">{{ formatDuration(service.duration) }}</p>
+        <p class="badge bg-primary text-dark mb-0 fs-6">${{ (service.price / 100).toFixed(2) }}</p>
       </div>
       <button
           @click="bookService(service.id, service.business_id)"
-          class="btn btn-primary"
+          class="btn btn-primary btn-lg"
           :disabled="!service.is_active"
       >
+        <i class="bi bi-journal-check"></i>
         {{ service.is_active ? 'Book' : 'Unavailable' }}
       </button>
     </div>
@@ -37,6 +38,9 @@ const emit = defineEmits(['book']);
 const formatDuration = (minutes) => {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
+  if (remainingMinutes === 0) {
+    return `${hours}h`;
+  }
   return `${hours > 0 ? `${hours}h ` : ''}${remainingMinutes}m`;
 };
 

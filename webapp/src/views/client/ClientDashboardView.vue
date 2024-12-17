@@ -2,12 +2,12 @@
   <div class="w-auto ms-4">
     <!-- Search Section -->
     <div class="bg-container p-4 d-flex justify-content-center align-items-center">
-      <div class="d-flex align-items-center search-panel">
+      <div class="input-group input-group-lg">
         <input
             type="text"
             v-model="searchQuery"
             placeholder="Search for services or businesses..."
-            class="form-control search-input me-2"
+            class="form-control search-input form-control-lg"
         />
         <button @click="search" class="btn btn-primary me-2">Search</button>
       </div>
@@ -20,21 +20,34 @@
         </div>
       </div>
 
-      <div v-if="results.services.length > 0" class="bg-container p-3 mb-3">
-        <h4 class="h4 mb-0">Services</h4>
+      <div v-if="results.services.length > 0" class="bg-container p-4 mb-3">
+        <p class="h4 mb-0 text-primary">
+          <i class="bi bi-card-checklist me-2"></i>
+          Services
+        </p>
       </div>
       <div class="">
         <BusinessServiceList :services="results.services" @book="handleBooking"/>
       </div>
 
-      <div v-if="results.businesses.length > 0" class="bg-container p-3 mb-3">
-        <h4 class="h4 mb-0">Businesses</h4>
+      <div v-if="results.businesses.length > 0" class="bg-container p-4 mb-3">
+        <h4 class="h4 mb-0 text-primary">
+          <i class="bi bi-card-checklist me-2"></i>
+          Businesses
+        </h4>
       </div>
       <div class="">
         <div v-for="business in results.businesses" :key="business.id"
              class="business-item p-3 bg-container mb-3 d-flex justify-content-between align-items-center">
-          <h5 class="h5 mb-1">{{ business.name }}</h5>
-          <button @click="viewBusiness(business.id)" class="btn btn-primary">View</button>
+          <div class="d-flex align-items-center">
+            <img :src="business.logo_url" :alt="business.name" class="logo me-3"
+                 v-if="business.logo_url"/>
+            <span class="h4 mb-0">{{ business.name }}</span>
+          </div>
+          <button @click="viewBusiness(business.id)" class="btn btn-primary btn-lg">
+            <i class="bi bi-eye"></i>
+            View
+          </button>
         </div>
       </div>
     </div>
@@ -101,5 +114,9 @@ const handleBookingConfirmation = ({date, timeSlot}) => {
 .search-panel {
   max-width: 600px;
   width: 100%;
+}
+
+.logo {
+  height: 40px;
 }
 </style>

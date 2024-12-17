@@ -1,7 +1,8 @@
 <template>
-  <div class="vh-100 d-flex align-items-center justify-content-center">
+  <div class="vh-100 d-flex flex-column pt-5">
+    <div class="mb-5 pt-5"><Logo/></div>
     <div class="container p-5 bg-container">
-      <h2 class="mb-4 h2 text-center">Start your journey of project management!</h2>
+      <h2 class="my-4 h2 text-center">Welcome back!</h2>
 
       <!--      <div class="d-flex justify-content-center mb-4">-->
       <!--        <button-->
@@ -26,20 +27,20 @@
         <!--          <input type="number" v-model="formData.business_id" id="businessID" class="form-control" :required="accountType === 'business'" />-->
         <!--        </div>-->
 
-        <div class="mb-3">
-          <label for="emailOrPhone" class="form-label">Email or Phone</label>
-          <input type="text" v-model="formData.email_or_phone" id="emailOrPhone" class="form-control" required/>
+        <div class="mb-4">
+          <input type="text" v-model="formData.email_or_phone" id="emailOrPhone" class="form-control form-control-lg"
+                 required placeholder="Email or Phone"/>
         </div>
 
-        <div class="mb-5">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" v-model="formData.password" id="password" class="form-control" required/>
+        <div class="mb-4">
+          <input type="password" v-model="formData.password" id="password" class="form-control form-control-lg" required
+                 placeholder="Password"/>
         </div>
 
-        <button type="submit" class="btn btn-lg btn-success w-100">Login</button>
+        <button type="submit" class="btn btn-lg btn-primary w-100">Login</button>
       </form>
 
-      <p class="text-center mt-3">
+      <p class="text-center mt-4">
         Don't have an account?
         <router-link to="/auth/register" class="text-decoration-none">Register here</router-link>
       </p>
@@ -52,6 +53,7 @@ import {ref} from 'vue';
 import {useUserStore} from '@/stores/userStore';
 import {useRouter} from "vue-router";
 import {USER_ROLE_ADMIN, USER_ROLE_CLIENT, USER_ROLE_EMPLOYEE} from "@/utils/constants.js";
+import Logo from "@/components/Logo.vue";
 
 const userStore = useUserStore();
 
@@ -89,7 +91,6 @@ const handleSubmit = async () => {
 <style scoped>
 .container {
   max-width: 600px;
-  width: 500px;
-  margin: auto;
+  width: 550px;
 }
 </style>

@@ -2,7 +2,10 @@
   <div class="w-auto ms-4">
     <!-- Header Section with Date Range Filters -->
     <div class="bg-container p-4 d-flex justify-content-between align-items-center">
-      <h2 class="h2 mb-0">Appointments</h2>
+      <h2 class="h2 mb-0">
+        <i class="bi bi-calendar-check me-2"></i>
+        Appointments
+      </h2>
       <div class="d-flex align-items-center">
         <input type="date" v-model="startDate" class="form-control me-2" placeholder="Start Date"/>
         <input type="date" v-model="endDate" class="form-control me-2" placeholder="End Date"/>
@@ -12,34 +15,33 @@
 
     <!-- Appointments List Table -->
     <div class="p-4 mt-3 bg-container">
-      <table class="table table-striped">
+      <table class="table">
         <thead>
         <tr>
-          <th>Client</th>
-          <th>Employee</th>
-          <th>Service</th>
-          <th>Date</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th class="table-bg text-primary fs-4">Client</th>
+          <th class="table-bg text-primary fs-4">Employee</th>
+          <th class="table-bg text-primary fs-4">Service</th>
+          <th class="table-bg text-primary fs-4">Date</th>
+          <th class="table-bg text-primary fs-4">Time</th>
+          <th class="table-bg text-primary fs-4">Status</th>
+          <th class="table-bg text-primary fs-4">Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="appointment in appointments" :key="appointment.id">
-          <td>{{ appointment.client?.full_name || 'N/A' }}</td>
-          <td>{{ appointment.employee?.full_name || 'N/A' }}</td>
-          <td>{{ appointment.service?.name || 'N/A' }}</td>
-          <td>{{formatToFancyDateString(appointment.start_time)}}</td>
-          <td>{{ formatTime(appointment.start_time) }}</td>
-          <td>{{ formatTime(appointment.end_time) }}</td>
-          <td>{{ STATUS_MAP[appointment.status] }}</td>
-          <td>
-            <button @click="viewAppointment(appointment)" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
+          <td class="table-bg fs-6">{{ appointment.client?.full_name || 'N/A' }}</td>
+          <td class="table-bg fs-6">{{ appointment.employee?.full_name || 'N/A' }}</td>
+          <td class="table-bg fs-6">{{ appointment.service?.name || 'N/A' }}</td>
+          <td class="table-bg fs-6">{{formatToFancyDateString(appointment.start_time)}}</td>
+          <td class="table-bg fs-6">{{ formatTime(appointment.start_time) }} - {{ formatTime(appointment.end_time) }}</td>
+          <td class="table-bg fs-6">{{ STATUS_MAP[appointment.status] }}</td>
+          <td class="table-bg fs-6">
+            <button @click="viewAppointment(appointment)" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal"
                     data-bs-target="#appointmentModal">
+              <i class="bi bi-eye"></i>
               View
             </button>
-            <button @click="cancelAppointment(appointment.id)" class="btn btn-sm btn-danger"
+            <button @click="cancelAppointment(appointment.id)" class="btn btn-sm btn-outline-danger"
                     :disabled="appointment.status === 'cancelled' || appointment.status === 'completed'">Cancel
             </button>
           </td>
@@ -59,7 +61,7 @@ import {ref, onMounted} from 'vue';
 import {useBusinessStore} from '@/stores/businessStore';
 import AppointmentDetailModal from "@/components/admin/AppointmentDetailModal.vue";
 import {STATUS_MAP} from "@/utils/constants.js";
-import {formatToFancyDateString} from "@/utils/covertors.js";
+import {formatTime, formatToFancyDateString} from "@/utils/covertors.js";
 
 // Helper function to format dates to "YYYY-MM-DD" format
 const formatDate = (date) => date.toISOString().split('T')[0];
@@ -90,16 +92,13 @@ const cancelAppointment = async (appointmentId) => {
   }
 };
 
-// Format time to "HH:MM" format for display
-const formatTime = (time) => {
-  const date = new Date(time);
-  return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-};
-
 // Fetch initial appointments on mount
 onMounted(fetchAppointments);
 </script>
 
 <style scoped>
-
+.table-bg {
+  background: #1e2024;
+  padding: 15px;
+}
 </style>

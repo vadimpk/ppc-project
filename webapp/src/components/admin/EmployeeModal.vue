@@ -15,7 +15,10 @@
             <li class="list-group-item d-flex justify-content-between align-items-center"
                 v-for="service in employeeServices" :key="service.id">
               <span>{{ service.name }}</span>
-              <button @click="removeService(service.id)" class="btn btn-sm btn-danger">Remove</button>
+              <button @click="removeService(service.id)" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+                Remove
+              </button>
             </li>
           </ul>
 
@@ -23,7 +26,7 @@
           <select v-model="newServiceId" class="form-select mb-3">
             <option v-for="service in services" :key="service.id" :value="service.id">{{ service.name }}</option>
           </select>
-          <button @click="assignService" class="btn btn-primary">Assign Service</button>
+          <button @click="assignService" class="btn btn-primary" :disabled="services.length === 0">Assign Service</button>
         </div>
       </div>
     </div>

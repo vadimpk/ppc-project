@@ -271,7 +271,7 @@ func (s *appointmentService) GetAvailableSlots(ctx context.Context, employeeID i
 	}
 
 	// Generate available slots
-	slots := generateAvailableSlots(schedules, appointments, service.Duration)
+	slots := generateAvailableSlots(schedules, appointments, service.Duration, date)
 	return slots, nil
 }
 
@@ -337,14 +337,24 @@ func isTimeSlotInSchedule(start, end time.Time, schedule *entity.ScheduleTemplat
 	return false
 }
 
-func generateAvailableSlots(schedule *entity.ScheduleTemplate, appointments []entity.Appointment, duration int) []TimeSlot {
+func generateAvailableSlots(schedule *entity.ScheduleTemplate, appointments []entity.Appointment, duration int, date time.Time) []TimeSlot {
+	if schedule.IsBreak {
+		return nil
+	}
+
 	var availableSlots []TimeSlot
 	slotDuration := time.Duration(duration) * time.Minute
 
+	now := time.Now().Add(15 * time.Minute).UTC()
+
 	// Start iterating from the start time of the schedule to the end time
-	currentStartTime := schedule.StartTime
-	for currentStartTime.Add(slotDuration).Before(schedule.EndTime) || currentStartTime.Add(slotDuration).Equal(schedule.EndTime) {
+	currentStartTime := time.Date(date.Year(), date.Month(), date.Day(), schedule.StartTime.Hour(), schedule.StartTime.Minute(), 0, 0, now.Location())
+	endTime := time.Date(date.Year(), date.Month(), date.Day(), schedule.EndTime.Hour(), schedule.EndTime.Minute(), 0, 0, now.Location())
+	for currentStartTime.Add(slotDuration).Before(endTime) || currentStartTime.Add(slotDuration).Equal(endTime) {
 		currentEndTime := currentStartTime.Add(slotDuration)
+		if currentEndTime.Before(now) {
+			continue
+		}
 
 		// Check if this slot conflicts with any appointment
 		conflict := false

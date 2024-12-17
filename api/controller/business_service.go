@@ -164,13 +164,6 @@ func (h *BusinessServiceHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify user has permission to list services for this business
-	currentBusinessID, _ := middleware.GetBusinessID(r.Context())
-	if businessID != currentBusinessID {
-		response.Error(w, http.StatusForbidden, "unauthorized")
-		return
-	}
-
 	// Check query parameter for active-only filter
 	activeOnly := r.URL.Query().Get("active") == "true"
 

@@ -4,22 +4,22 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="updateUserProfileModalLabel">Update Profile Information</h4>
+          <h4 class="modal-title" id="updateUserProfileModalLabel">
+            <i class="bi bi-person-lines-fill me-2"></i>
+            Update Profile Information
+          </h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form @submit.prevent="updateUserProfile">
-            <div class="mb-4">
-              <label for="fullName" class="form-label">Full Name</label>
-              <input type="text" v-model="fullName" id="fullName" class="form-control" required/>
+            <div class="mb-2">
+              <input type="text" v-model="fullName" id="fullName" class="form-control-plaintext" required placeholder="Full Name"/>
             </div>
-            <div class="mb-4">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" v-model="email" id="email" class="form-control" required/>
+            <div class="mb-2">
+              <input type="email" v-model="email" id="email" class="form-control-plaintext" required placeholder="Email"/>
             </div>
-            <div class="mb-4">
-              <label for="phone" class="form-label">Phone</label>
-              <input type="tel" v-model="phone" id="phone" class="form-control"/>
+            <div class="mb-3">
+              <input type="tel" v-model="phone" id="phone" class="form-control-plaintext" placeholder="Phone"/>
             </div>
             <button type="submit" class="btn btn-primary w-100">Update</button>
           </form>

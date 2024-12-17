@@ -6,45 +6,45 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="appointmentModalLabel">Appointment Details</h4>
+          <h5 class="text-center h4">Appointment to <strong>{{ appointment.service?.name || 'N/A' }}</strong></h5>
           <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- Appointment Information -->
-          <h5>Appointment to <strong>{{ appointment.service?.name || 'N/A' }}</strong></h5>
-          <div class="row">
+          <div class="row mb-2">
             <div class="col-6">
-              <p><strong>Start Time:</strong> {{ formatTime(appointment.start_time) }}</p>
+              <h5 class="h4 mb-3 text-center">Client</h5>
+              <p>
+                <span class="text-muted me-2">Name: </span>
+                <strong>{{ appointment.client?.full_name || 'N/A' }}</strong>
+              </p>
+              <p>
+                <span class="text-muted me-2">Email: </span>
+                <strong>{{ appointment.client?.email || 'N/A' }}</strong>
+              </p>
+              <p>
+                <span class="text-muted me-2">Phone: </span>
+                <strong>{{ appointment.client?.phone || 'N/A' }}</strong>
+              </p>
             </div>
             <div class="col-6">
-              <p><strong>End Time:</strong> {{ formatTime(appointment.end_time) }}</p>
+              <h5 class="h4 mb-3 text-center">Employee</h5>
+              <p>
+                <span class="text-muted me-2">Name: </span>
+                <strong>{{ appointment.employee?.full_name || 'N/A' }}</strong>
+              </p>
+              <p>
+                <span class="text-muted me-2">Email: </span>
+                <strong>{{ appointment.employee?.email || 'N/A' }}</strong>
+              </p>
+              <p>
+                <span class="text-muted me-2">Phone: </span>
+                <strong>{{ appointment.employee?.phone || 'N/A' }}</strong>
+              </p>
             </div>
           </div>
-          <div class="row">
-            <div class="col-6">
-              <p><strong>Status:</strong> {{ appointment.status }}</p>
-            </div>
-            <div class="col-6">
-              <p><strong>Reminder Time:</strong>
-                {{ appointment.reminder_time ? appointment.reminder_time + ' minutes' : 'None' }}</p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-6">
-              <h5 class="h5 mt-4">Client Information</h5>
-              <p><strong>Name:</strong> {{ appointment.client?.full_name || 'N/A' }}</p>
-              <p><strong>Email:</strong> {{ appointment.client?.email || 'N/A' }}</p>
-              <p><strong>Phone:</strong> {{ appointment.client?.phone || 'N/A' }}</p>
-              <p><strong>Registered At:</strong> {{ formatDate(appointment.client?.created_at) }}</p>
-            </div>
-            <div class="col-6">
-              <h5 class="h5 mt-4">Employee Information</h5>
-              <p><strong>Name:</strong> {{ appointment.employee?.full_name || 'N/A' }}</p>
-              <p><strong>Email:</strong> {{ appointment.employee?.email || 'N/A' }}</p>
-              <p><strong>Phone:</strong> {{ appointment.employee?.phone || 'N/A' }}</p>
-              <p><strong>Joined At:</strong> {{ formatDate(appointment.employee?.created_at) }}</p>
-            </div>
+          <div class="d-flex justify-content-center">
+            <p class="badge bg-primary text-dark mb-0 fs-6 me-3">{{ formatTime(appointment.start_time) }} - {{ formatTime(appointment.end_time) }}</p>
+            <p class="badge bg-primary text-dark mb-0 fs-6">{{ STATUS_MAP[appointment.status] }}</p>
           </div>
         </div>
       </div>
@@ -54,8 +54,9 @@
 
 <script setup>
 import {ref} from 'vue';
-import {parseDurationToInt} from "@/utils/covertors.js";
+import {formatTime} from "@/utils/covertors.js";
 import {Modal} from "bootstrap";
+import {STATUS_MAP} from "@/utils/constants.js";
 
 const props = defineProps({
   appointment: {
@@ -64,12 +65,6 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['close']);
-
-// Format time for display
-const formatTime = (time) => {
-  const date = new Date(time);
-  return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-};
 
 // Format date for display
 const formatDate = (date) => {
